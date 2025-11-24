@@ -1,51 +1,232 @@
-<!doctype html>
-<html>
-    <head>
-        <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-        <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-        <script src="https://raw.githack.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
-        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
-        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
-    </head>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>Cosmic Heart AR Experience</title>
 
-    <body style="margin: 0; overflow: hidden;">
-        <a-scene
-            vr-mode-ui="enabled: false;"
-            loading-screen="enabled: false;"
-            renderer="logarithmicDepthBuffer: true;"
-            arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
-            id="scene"
-            embedded
-            gesture-detector
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Creepster&display=swap" rel="stylesheet">
+
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <script src="https://raw.githack.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
+
+    <style>
+        /* --- ESTILOS COSMIC HEART --- */
+        :root {
+            --cosmic-red: #ff0055;
+            --cosmic-purple: #4a00e0;
+            --punk-black: #0a0a0a;
+            --grunge-texture: url('https://www.transparenttextures.com/patterns/aged-paper.png'); /* Textura sutil de fondo */
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Bangers', cursive; /* Fuente estilo cómic */
+            background-color: var(--punk-black);
+        }
+
+        /* Pantalla de Carga Personalizada */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--punk-black), #1a001a);
+            background-image: var(--grunge-texture);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: var(--cosmic-red);
+            text-shadow: 2px 2px 0px #000, -2px -2px 0px var(--cosmic-purple);
+            transition: opacity 0.5s ease-out;
+        }
+        #splash-screen h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .loader-pulse {
+            width: 50px;
+            height: 50px;
+            background-color: var(--cosmic-red);
+            border-radius: 50%;
+            animation: pulse-animation 1.5s infinite ease-in-out;
+        }
+        @keyframes pulse-animation {
+            0% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(255, 0, 85, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 20px rgba(255, 0, 85, 0); }
+            100% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(255, 0, 85, 0); }
+        }
+
+        /* Capa de Interfaz de Usuario (HUD) */
+        #ar-hud {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Permite clicks a través de la capa hacia el modelo 3D */
+            z-index: 10;
+            /* Efecto viñeta grunge en los bordes */
+            background: radial-gradient(circle at center, transparent 50%, rgba(10, 10, 10, 0.8) 100%);
+            box-shadow: inset 0 0 50px rgba(74, 0, 224, 0.3);
+            border: 5px solid var(--punk-black);
+            box-sizing: border-box;
+        }
+
+        /* Título superior */
+        .hud-title {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-size: 1.5em;
+            text-shadow: 2px 2px var(--cosmic-red);
+            pointer-events: auto;
+        }
+
+        /* Botón de Música */
+        #music-control {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: auto; /* Esencial para poder hacer click */
+            background-color: var(--punk-black);
+            color: var(--cosmic-red);
+            border: 2px solid var(--cosmic-red);
+            padding: 10px 20px;
+            font-family: 'Bangers', cursive;
+            font-size: 1.2em;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 3px 3px 0px var(--cosmic-purple);
+            transition: all 0.2s;
+        }
+        #music-control:active {
+            transform: translateX(-50%) translate(2px, 2px);
+            box-shadow: 1px 1px 0px var(--cosmic-purple);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="splash-screen">
+        <h1>Cosmic Heart AR</h1>
+        <div class="loader-pulse"></div>
+        <p>Cargando la rebelión...</p>
+    </div>
+
+    <div id="ar-hud">
+        <div class="hud-title">MODO: ESCÁNER CÓSMICO</div>
+        
+        <audio id="bg-music" loop>
+            <source src="assets/mother.mp3" type="audio/mpeg">
+            Tu navegador no soporta audio HTML5.
+        </audio>
+        
+        <button id="music-control">▶ INICIAR MÚSICA</button>
+    </div>
+
+
+    <a-scene
+        vr-mode-ui="enabled: false;"
+        loading-screen="enabled: false;"
+        renderer="logarithmicDepthBuffer: true; alpha: true;"
+        arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; patternRatio: 0.75;"
+        id="scene"
+        embedded
+        gesture-detector
+    >
+        <a-assets>
+            <a-asset-item
+                id="animated-asset"
+                src="assets/asset.glb"
+                timeout="10000"
+            ></a-asset-item>
+        </a-assets>
+
+        <a-marker
+            id="animated-marker"
+            type="pattern"
+            preset="custom"
+            url="assets/marker.patt"
+            raycaster="objects: .clickable"
+            emitevents="true"
+            cursor="fuse: false; rayOrigin: mouse;"
+            id="markerA"
+            smooth="true"
+            smoothCount="10"
         >
-            <a-assets>
-                <a-asset-item
-                    id="animated-asset"
-                    src="assets/asset.glb"
-                ></a-asset-item>
-            </a-assets>
+            <a-entity
+                id="model-target"
+                scale="0.13999999999999996 0.13999999999999996 0.13999999999999996"
+                animation-mixer="loop: repeat"
+                gltf-model="#animated-asset"
+                class="clickable"
+                gesture-handler
+                
+            ></a-entity>
 
-            <a-marker
-                id="animated-marker"
-                type="pattern"
-                preset="custom"
-                url="assets/marker.patt"
-                raycaster="objects: .clickable"
-                emitevents="true"
-                cursor="fuse: false; rayOrigin: mouse;"
-                id="markerA"
-            >
-                <a-entity
-                    id="bowser-model"
-                    scale="0.13999999999999996 0.13999999999999996 0.13999999999999996"
-                    animation-mixer="loop: repeat"
-                    gltf-model="#animated-asset"
-                    class="clickable"
-                    gesture-handler
-                ></a-entity>
-            </a-marker>
+            <a-entity light="type: ambient; color: #BBB"></a-entity>
+             <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="-0.5 1 1"></a-entity>
 
-            <a-entity camera></a-entity>
-        </a-scene>
-    </body>
+        </a-marker>
+
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+        // 1. Control de la Pantalla de Carga
+        const scene = document.querySelector('a-scene');
+        const splash = document.querySelector('#splash-screen');
+
+        // Cuando la escena de A-Frame esté lista, ocultamos la pantalla de carga
+        scene.addEventListener('loaded', () => {
+             setTimeout(() => { // Un pequeño delay para asegurar estabilidad
+                 splash.style.opacity = '0';
+                 setTimeout(() => { splash.style.display = 'none'; }, 500);
+             }, 1500);
+        });
+
+        // 2. Control de Música
+        const musicBtn = document.getElementById('music-control');
+        const music = document.getElementById('bg-music');
+        let isPlaying = false;
+
+        musicBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                music.pause();
+                musicBtn.innerText = '▶ REANUDAR MÚSICA';
+            } else {
+                music.play().then(() => {
+                    // La reproducción comenzó correctamente
+                    musicBtn.innerText = '❚❚ PAUSAR MÚSICA';
+                }).catch(error => {
+                     console.log("Error al reproducir audio (posible bloqueo del navegador):", error);
+                     musicBtn.innerText = '⚠ ERROR DE AUDIO';
+                });
+            }
+            isPlaying = !isPlaying;
+        });
+
+        // 3. Detectar cuando se encuentra el marcador (Opcional: para efectos de sonido futuros)
+        const marker = document.querySelector('#animated-marker');
+        marker.addEventListener('markerFound', () => {
+            console.log("¡Marcador Cosmic Heart detectado!");
+            // Aquí podrías disparar un efecto de sonido corto si quisieras
+        });
+    </script>
+</body>
 </html>
