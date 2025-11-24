@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>Cosmic Heart AR Experience</title>
+    <title>Cosmic Heart AR - Hell Edition</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,127 +16,152 @@
     <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
 
     <style>
-        /* --- ESTILOS COSMIC HEART --- */
+        /* --- ESTILOS INFERNALES --- */
         :root {
-            --cosmic-red: #ff0055;
-            --cosmic-purple: #4a00e0;
-            --punk-black: #0a0a0a;
-            --grunge-texture: url('https://www.transparenttextures.com/patterns/aged-paper.png'); /* Textura sutil de fondo */
+            /* Nueva paleta de colores infernal */
+            --hell-red: #d30000;       /* Rojo sangre oscuro */
+            --hell-fire: #ff4500;      /* Naranja fuego brillante */
+            --abyss-black: #080000;    /* Negro casi total */
+            --ember-glow: 0 0 10px var(--hell-fire), 0 0 20px var(--hell-red); /* Efecto de brasa */
+            --grunge-texture: url('https://www.transparenttextures.com/patterns/aged-paper.png');
         }
 
         body {
             margin: 0;
             overflow: hidden;
-            font-family: 'Bangers', cursive; /* Fuente estilo cómic */
-            background-color: var(--punk-black);
+            font-family: 'Bangers', cursive;
+            background-color: var(--abyss-black);
         }
 
-        /* Pantalla de Carga Personalizada */
+        /* Pantalla de Carga Infernal */
         #splash-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, var(--punk-black), #1a001a);
+            /* Fondo: Gradiente radial que parece un pozo de lava */
+            background: radial-gradient(circle at bottom center, #500000 0%, var(--abyss-black) 70%);
+            /* Mezclamos la textura con el fondo rojo oscuro */
+            background-blend-mode: overlay;
             background-image: var(--grunge-texture);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            color: var(--cosmic-red);
-            text-shadow: 2px 2px 0px #000, -2px -2px 0px var(--cosmic-purple);
+            color: var(--hell-fire);
             transition: opacity 0.5s ease-out;
         }
         #splash-screen h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
+            font-family: 'Creepster', cursive; /* Fuente más terrorífica para el título */
+            font-size: 4em;
+            margin-bottom: 0px;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+            /* Sombra de texto que parece fuego */
+            text-shadow: 0px 0px 5px #000, 0px -5px 15px var(--hell-red);
         }
+        #splash-screen p {
+            font-size: 1.2em;
+            color: var(--hell-red);
+            letter-spacing: 1px;
+        }
+        
+        /* Animación del cargador tipo "Latido del Infierno" */
         .loader-pulse {
-            width: 50px;
-            height: 50px;
-            background-color: var(--cosmic-red);
+            width: 60px;
+            height: 60px;
+            background-color: var(--hell-red);
             border-radius: 50%;
-            animation: pulse-animation 1.5s infinite ease-in-out;
+            box-shadow: 0 0 20px var(--hell-fire);
+            animation: pulse-animation-hell 1.2s infinite ease-in-out;
+            margin-top: 20px;
         }
-        @keyframes pulse-animation {
-            0% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(255, 0, 85, 0.7); }
-            70% { transform: scale(1.1); box-shadow: 0 0 0 20px rgba(255, 0, 85, 0); }
-            100% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(255, 0, 85, 0); }
+        @keyframes pulse-animation-hell {
+            0% { transform: scale(0.8); opacity: 0.8; box-shadow: 0 0 0 0 rgba(255, 69, 0, 0.7); }
+            50% { opacity: 1; }
+            100% { transform: scale(1.3); opacity: 0; box-shadow: 0 0 0 30px rgba(255, 69, 0, 0); }
         }
 
-        /* Capa de Interfaz de Usuario (HUD) */
+        /* Capa de Interfaz de Usuario (HUD) Infernal */
         #ar-hud {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none; /* Permite clicks a través de la capa hacia el modelo 3D */
+            pointer-events: none;
             z-index: 10;
-            /* Efecto viñeta grunge en los bordes */
-            background: radial-gradient(circle at center, transparent 50%, rgba(10, 10, 10, 0.8) 100%);
-            box-shadow: inset 0 0 50px rgba(74, 0, 224, 0.3);
-            border: 5px solid var(--punk-black);
+            /* Viñeta roja oscura y pesada en los bordes */
+            background: radial-gradient(circle at center, transparent 40%, rgba(60, 0, 0, 0.95) 100%);
+            /* Resplandor interno rojo */
+            box-shadow: inset 0 0 100px rgba(211, 0, 0, 0.3);
+            /* Borde delgado rojo brillante */
+            border: 2px solid var(--hell-red);
             box-sizing: border-box;
         }
 
         /* Título superior */
         .hud-title {
             position: absolute;
-            top: 10px;
+            top: 15px;
             width: 100%;
             text-align: center;
-            color: white;
-            font-size: 1.5em;
-            text-shadow: 2px 2px var(--cosmic-red);
+            color: var(--hell-fire);
+            font-size: 2em;
+            letter-spacing: 2px;
+            /* Texto brillante como metal caliente */
+            text-shadow: 2px 2px 0px #000, var(--ember-glow);
             pointer-events: auto;
+            font-family: 'Creepster', cursive;
         }
 
-        /* Botón de Música */
+        /* Botón de Música Infernal */
         #music-control {
             position: absolute;
-            bottom: 20px;
+            bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            pointer-events: auto; /* Esencial para poder hacer click */
-            background-color: var(--punk-black);
-            color: var(--cosmic-red);
-            border: 2px solid var(--cosmic-red);
-            padding: 10px 20px;
+            pointer-events: auto;
+            /* Fondo negro semitransparente */
+            background-color: rgba(10, 0, 0, 0.8);
+            color: var(--hell-fire);
+            border: 3px solid var(--hell-red);
+            padding: 12px 25px;
             font-family: 'Bangers', cursive;
-            font-size: 1.2em;
+            font-size: 1.3em;
             cursor: pointer;
             text-transform: uppercase;
-            box-shadow: 3px 3px 0px var(--cosmic-purple);
+            /* Sombra dura roja y resplandor de texto */
+            box-shadow: 5px 5px 0px var(--hell-red);
+            text-shadow: 0 0 8px var(--hell-fire);
             transition: all 0.2s;
         }
         #music-control:active {
-            transform: translateX(-50%) translate(2px, 2px);
-            box-shadow: 1px 1px 0px var(--cosmic-purple);
+            transform: translateX(-50%) translate(3px, 3px);
+            box-shadow: 2px 2px 0px var(--hell-red);
+            background-color: var(--hell-red);
+            color: black;
         }
     </style>
 </head>
 
 <body>
     <div id="splash-screen">
-        <h1>Cosmic Heart AR</h1>
+        <h1>Cosmic Heart</h1>
+        <p>Abriendo el portal...</p>
         <div class="loader-pulse"></div>
-        <p>Cargando la rebelión...</p>
     </div>
 
     <div id="ar-hud">
-        <div class="hud-title">MODO: ESCÁNER CÓSMICO</div>
+        <div class="hud-title">COSMIC SCANNER</div>
         
         <audio id="bg-music" loop>
-            <source src="assets/mother.mp3" type="audio/mpeg">
-            Tu navegador no soporta audio HTML5.
+            <source src="assets/musica_cosmica.mp3" type="audio/mpeg">
         </audio>
         
-        <button id="music-control">▶ INICIAR MÚSICA</button>
+        <button id="music-control">🔥 INVOCAR SONIDO</button>
     </div>
 
 
@@ -176,31 +201,26 @@
                 gltf-model="#animated-asset"
                 class="clickable"
                 gesture-handler
-                
             ></a-entity>
 
-            <a-entity light="type: ambient; color: #BBB"></a-entity>
+             <a-entity light="type: ambient; color: #BBB"></a-entity>
              <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="-0.5 1 1"></a-entity>
-
         </a-marker>
 
         <a-entity camera></a-entity>
     </a-scene>
 
     <script>
-        // 1. Control de la Pantalla de Carga
         const scene = document.querySelector('a-scene');
         const splash = document.querySelector('#splash-screen');
 
-        // Cuando la escena de A-Frame esté lista, ocultamos la pantalla de carga
         scene.addEventListener('loaded', () => {
-             setTimeout(() => { // Un pequeño delay para asegurar estabilidad
+             setTimeout(() => {
                  splash.style.opacity = '0';
                  setTimeout(() => { splash.style.display = 'none'; }, 500);
-             }, 1500);
+             }, 2000); // Un poco más de tiempo para apreciar la pantalla de carga infernal
         });
 
-        // 2. Control de Música
         const musicBtn = document.getElementById('music-control');
         const music = document.getElementById('bg-music');
         let isPlaying = false;
@@ -208,24 +228,15 @@
         musicBtn.addEventListener('click', () => {
             if (isPlaying) {
                 music.pause();
-                musicBtn.innerText = '▶ REANUDAR MÚSICA';
+                musicBtn.innerText = '🔥 INVOCAR SONIDO';
             } else {
                 music.play().then(() => {
-                    // La reproducción comenzó correctamente
-                    musicBtn.innerText = '❚❚ PAUSAR MÚSICA';
+                    musicBtn.innerText = '❌ SILENCIAR EL AVERNO';
                 }).catch(error => {
-                     console.log("Error al reproducir audio (posible bloqueo del navegador):", error);
-                     musicBtn.innerText = '⚠ ERROR DE AUDIO';
+                     console.log("Error de audio:", error);
                 });
             }
             isPlaying = !isPlaying;
-        });
-
-        // 3. Detectar cuando se encuentra el marcador (Opcional: para efectos de sonido futuros)
-        const marker = document.querySelector('#animated-marker');
-        marker.addEventListener('markerFound', () => {
-            console.log("¡Marcador Cosmic Heart detectado!");
-            // Aquí podrías disparar un efecto de sonido corto si quisieras
         });
     </script>
 </body>
